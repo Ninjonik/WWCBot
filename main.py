@@ -172,7 +172,7 @@ class Client(commands.Bot):
                 embed.set_footer(
                     text="Welcome to **World War Community**, make sure to follow verification instructions to get a "
                          "full "
-                         "access to the server. "
+                         "access to they; server. "
                 )
 
                 await channel.send(content=f"{member.mention}", embed=embed, view=presets.EntryDialog(client))

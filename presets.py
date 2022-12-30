@@ -21,8 +21,10 @@ import mysql.connector
 import time
 
 
-prefix = (Back.BLACK + Fore.GREEN + datetime.datetime.now().strftime("%H:%M:%S UTC") + Back.RESET + Fore.WHITE +
-          Style.BRIGHT)
+def prefix():
+    return (Back.BLACK + Fore.GREEN + datetime.datetime.now().strftime("%H:%M:%S UTC") + Back.RESET + Fore.WHITE +
+            Style.BRIGHT)
+
 
 token = config.bot_token
 
@@ -32,7 +34,6 @@ admins = {
     "DragonMan#1262",
     "no idea#8824"
 }
-
 
 
 async def ban(member, reason):
@@ -51,7 +52,7 @@ def check_perm(member):
 
 
 def log(content):
-    print(prefix + content)
+    print(prefix() + content)
 
 
 class UpdateRoles(discord.ui.View):

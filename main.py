@@ -40,7 +40,7 @@ async def on_start(server_name, server_description, guild_id, guild_count):
     current_time = datetime.datetime.now()
     current_date = datetime.datetime.now().date()
     if not settings:
-        print(f"Guild was not in database - {server_name}")
+        print(f"{presets.prefix()} Guild was not in database - {server_name}")
         cursor.execute("INSERT INTO settings (created_at, updated_at, verify, serverName, "
                        "serverDescription, guildId) VALUES ('%s', "
                        "'%s', %s, '%s', '%s', %s)" % (current_time,
@@ -57,8 +57,9 @@ async def on_start(server_name, server_description, guild_id, guild_count):
         # Extract the date from the datetime object stored in the database
         db_datetime = row[0][0]
         db_date = db_datetime.date()
+        print(f" {presets.prefix()} Current date is: {current_date} meanwhile DB date is: {db_date}")
         if current_date != db_date:
-            print(f"Date is different, updating statistics for {server_name}")
+            print(f"{presets.prefix()} Date is different, updating statistics for {server_name}")
             cursor.execute("UPDATE settings SET serverName='%s', serverDescription='%s', updated_at='%s'"
                            " WHERE guildId='%s'" % (server_name, server_description,
                                                     current_time, guild_id))
@@ -71,9 +72,9 @@ async def on_start(server_name, server_description, guild_id, guild_count):
 @tasks.loop(hours=24)
 async def update_guild_data(guilds):
     for guild in guilds:
-        print(f"{presets.prefix} Initializing guild {guild.name}")
+        print(f"{presets.prefix()} Initializing guild {guild.name}")
         await on_start(guild.name, guild.description, guild.id, guild.member_count)
-        print(f"{presets.prefix} Guild {guild.name} initialized!")
+        print(f"{presets.prefix()} Guild {guild.name} initialized!")
 
 
 @tasks.loop(seconds=60)
@@ -82,7 +83,7 @@ async def guildLoop():
     cursor.execute("SELECT count(guildId) as Counter FROM settings")
     dbCount = cursor.fetchone()
     if guildCount != int(dbCount[0]):
-        print(presets.prefix + " New guild was detected, restarting loop.")
+        print(presets.prefix() + " New guild was detected, restarting loop.")
         await update_guild_data(client.guilds)
 
 
@@ -121,16 +122,16 @@ class Client(commands.Bot):
     async def on_ready(self):
         if connection.is_connected():
             db_Info = connection.get_server_info()
-            print(presets.prefix + " Connected to MySQL Server version ", db_Info)
-        print(presets.prefix + " Logged in as " + Fore.YELLOW + self.user.name)
-        print(presets.prefix + " Bot ID " + Fore.YELLOW + str(self.user.id))
-        print(presets.prefix + " Discord Version " + Fore.YELLOW + self.user.name)
-        print(presets.prefix + " Python version " + Fore.YELLOW + discord.__version__)
-        print(presets.prefix + " Syncing slash commands...")
+            print(presets.prefix() + " Connected to MySQL Server version ", db_Info)
+        print(presets.prefix() + " Logged in as " + Fore.YELLOW + self.user.name)
+        print(presets.prefix() + " Bot ID " + Fore.YELLOW + str(self.user.id))
+        print(presets.prefix() + " Discord Version " + Fore.YELLOW + self.user.name)
+        print(presets.prefix() + " Python version " + Fore.YELLOW + discord.__version__)
+        print(presets.prefix() + " Syncing slash commands...")
         synced = await self.tree.sync()
-        print(presets.prefix + " Slash commands synced " + Fore.YELLOW + str(len(synced)) + " Commands")
-        print(presets.prefix + " Initializing guilds....")
-        print(presets.prefix + " Initializing status....")
+        print(presets.prefix() + " Slash commands synced " + Fore.YELLOW + str(len(synced)) + " Commands")
+        print(presets.prefix() + " Initializing guilds....")
+        print(presets.prefix() + " Initializing status....")
         if not statusLoop.is_running():
             statusLoop.start()
         if not guildLoop.is_running():

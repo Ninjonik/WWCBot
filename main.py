@@ -30,11 +30,10 @@ intents.guilds = True
 global cursor
 global connection
 
-# Establish database connection
-cursor, connection = config.setup()
-
 
 async def on_start(server_name, server_description, guild_id, guild_count):
+    # Establish database connection
+    cursor, connection = config.setup()
     cursor.execute("SELECT guildId FROM settings WHERE guildId='%s'" % guild_id)
     settings = cursor.fetchall()
     current_time = datetime.datetime.now()
@@ -69,7 +68,7 @@ async def on_start(server_name, server_description, guild_id, guild_count):
             connection.commit()
 
 
-@tasks.loop(hours=24)
+@tasks.loop(seconds=10)
 async def update_guild_data(guilds):
     for guild in guilds:
         print(f"{presets.prefix()} Initializing guild {guild.name}")
@@ -79,6 +78,8 @@ async def update_guild_data(guilds):
 
 @tasks.loop(seconds=60)
 async def guildLoop():
+    # Establish database connection
+    cursor, connection = config.setup()
     guildCount = len(client.guilds)
     cursor.execute("SELECT count(guildId) as Counter FROM settings")
     dbCount = cursor.fetchone()
@@ -120,8 +121,8 @@ class Client(commands.Bot):
             await self.load_extension(ext)
 
     async def on_ready(self):
-        if connection.is_connected():
-            db_Info = connection.get_server_info()
+        if self.connection.is_connected():
+            db_Info = self.connection.get_server_info()
             print(presets.prefix() + " Connected to MySQL Server version ", db_Info)
         print(presets.prefix() + " Logged in as " + Fore.YELLOW + self.user.name)
         print(presets.prefix() + " Bot ID " + Fore.YELLOW + str(self.user.id))
@@ -179,6 +180,5 @@ class Client(commands.Bot):
 
 
 client = Client()
-cursor = client.cursor
 
 client.run(presets.token)

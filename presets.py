@@ -22,7 +22,7 @@ import time
 
 
 def prefix():
-    return (Back.BLACK + Fore.GREEN + datetime.datetime.now().strftime("%H:%M:%S UTC") + Back.RESET + Fore.WHITE +
+    return (Back.BLACK + Fore.GREEN + datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S") + Back.RESET + Fore.WHITE +
             Style.BRIGHT)
 
 

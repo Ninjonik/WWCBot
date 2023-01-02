@@ -68,7 +68,7 @@ async def on_start(server_name, server_description, guild_id, guild_count):
             connection.commit()
 
 
-@tasks.loop(seconds=10)
+@tasks.loop(hours=24)
 async def update_guild_data(guilds):
     for guild in guilds:
         print(f"{presets.prefix()} Initializing guild {guild.name}")

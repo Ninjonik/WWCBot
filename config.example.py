@@ -2,6 +2,9 @@ import mysql.connector
 
 bot_token = ")T8gBRffdud4)AnY*^rUvjQrtV%FfIgSmpUsW6b+&V+V(VJ4JvWC&U$^D%!n%DNK"
 
+# GOOGLE API KEY FOR PERSPECTIVE API
+API_KEY = ''
+
 # MySQL credentials
 host = 'localhost'
 database = 'wwcbot'

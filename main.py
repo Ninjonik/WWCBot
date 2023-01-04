@@ -140,6 +140,37 @@ class Client(commands.Bot):
         if not update_guild_data.is_running():
             update_guild_data.start(self.guilds)
 
+    async def on_message(self, message):
+        if message.author != client.user and message.content:
+            analyze_request = {
+                'comment': {'text': message.content},
+                'requestedAttributes': {'TOXICITY': {}}
+            }
+            try:
+                response = presets.perspective.comments().analyze(body=analyze_request).execute()
+                toxicityValue = (response["attributeScores"]["TOXICITY"]["summaryScore"]["value"])
+                member = message.author
+                current_time = datetime.datetime.now()
+                self.cursor.execute(
+                    "INSERT INTO wwcbot_filter_logs (guildId, created_at, updated_at, message, authorId, result) "
+                    "VALUES (%s, '%s', '%s', '%s', %s, %s) " % (
+                        message.guild.id, current_time, current_time,
+                        message.content, message.author.id, toxicityValue))
+                self.connection.commit()
+                if toxicityValue >= 0.85:
+                    channel = await member.create_dm()
+                    await channel.send(f"Your message with following content:\n"
+                                       f"{message.content}\n"
+                                       f"has been auto-moderated and deleted.\n"
+                                       f"Value of toxicity: {toxicityValue}")
+                    print(f"{presets.prefix()} Message {message} has been deleted with {toxicityValue}.")
+                    await message.delete()
+                else:
+                    channel = message.channel
+                    # await channel.send(f"Toxicity value: {toxicityValue}")
+            except:
+                pass
+
     async def on_member_join(self, member):
         # await updateMemberCount(1, member.guild.id)
         for channel in member.guild.text_channels:

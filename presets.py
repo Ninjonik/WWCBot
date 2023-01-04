@@ -19,6 +19,7 @@ import config
 from PIL import Image, ImageDraw, ImageFont
 import mysql.connector
 import time
+from googleapiclient import discovery
 
 
 def prefix():
@@ -34,6 +35,15 @@ admins = {
     "DragonMan#1262",
     "no idea#8824"
 }
+
+
+perspective = discovery.build(
+  "commentanalyzer",
+  "v1alpha1",
+  developerKey=config.API_KEY,
+  discoveryServiceUrl="https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1",
+  static_discovery=False,
+)
 
 
 async def ban(member, reason):

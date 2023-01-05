@@ -141,6 +141,12 @@ class Client(commands.Bot):
             update_guild_data.start(self.guilds)
 
     async def on_message(self, message):
+        await self.check_toxicity(message)
+
+    async def on_message_edit(self, before, after):
+        await self.check_toxicity(after)
+
+    async def check_toxicity(self, message):
         if message.author != client.user and message.content:
             analyze_request = {
                 'comment': {'text': message.content},
@@ -157,7 +163,7 @@ class Client(commands.Bot):
                         message.guild.id, current_time, current_time,
                         message.content, message.author.id, toxicityValue))
                 self.connection.commit()
-                if toxicityValue >= 0.85:
+                if toxicityValue >= 0.8:
                     channel = await member.create_dm()
                     await channel.send(f"Your message with following content:\n"
                                        f"{message.content}\n"

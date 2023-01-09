@@ -133,6 +133,4 @@ dmypy.json
 #configuration file
 config.py
 
-#keys folder
-/keys/
 

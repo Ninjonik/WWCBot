@@ -39,7 +39,7 @@ class roles(commands.Cog):
             text="Click on Roles you want to Add/Remove."
         )
 
-        await interaction.channel.send(content="Now please click on roles you want to get / remove.",
+        await interaction.response.send_message(content="Now please click on roles you want to get / remove.",
                                        embed=embed,
                                        view=presets.UpdateRoles())
 

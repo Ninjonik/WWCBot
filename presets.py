@@ -94,6 +94,19 @@ class UpdateRoles(discord.ui.View):
                                                                name="Military Games Access"))
         msg = await interaction.response.send_message("Your roles have been updated.", ephemeral=True)
 
+    @discord.ui.button(label="Roblox Access", style=discord.ButtonStyle.secondary, custom_id="ur_roblox",
+                       emoji="✨")
+    async def roblox(self, interaction: discord.Interaction, button: discord.ui.Button):
+        role = discord.utils.get(interaction.guild.roles, name="Roblox Access")
+        if role in interaction.user.roles:
+            await interaction.user.remove_roles(discord.utils.get(interaction.user.guild.roles,
+                                                                  name="Roblox Access"))
+        else:
+            await interaction.user.add_roles(discord.utils.get(interaction.user.guild.roles,
+                                                               name="Roblox Access"))
+
+        msg = await interaction.response.send_message("Your roles have been updated.", ephemeral=True)
+
     @discord.ui.button(label="HOI4 Role", style=discord.ButtonStyle.primary, custom_id="ur_hoi4", emoji="🎖️")
     async def hoi4(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.user.add_roles(discord.utils.get(interaction.user.guild.roles, name="HOI4 Access"))
@@ -168,6 +181,12 @@ class EntryDialog(discord.ui.View):
                             value='If you came to the server to take part in a discussion or came to find other people '
                                   'to play various Historical Games that took place in the 20th century, '
                                   "then it's the place for you!",
+                            inline=True,
+                        )
+                        embed.add_field(
+                            name="**Roblox Access**",
+                            value='Click on this role if you want to stay updated on the brand new projects coming out '
+                                  'of our Roblox game studio and participate in our Roblox-oriented channels!',
                             inline=True,
                         )
                         embed.set_footer(

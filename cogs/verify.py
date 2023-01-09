@@ -52,7 +52,7 @@ class verify(commands.Cog):
             inline=True,
         )
         embed.set_footer(
-            text="Welcome to **World War Community**, make sure to follow verification instructions to get a full "
+            text="Welcome to World War Community, make sure to follow verification instructions to get a full "
                  "access to the server. "
         )
 

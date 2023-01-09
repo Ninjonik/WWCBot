@@ -1,24 +1,7 @@
-from asyncio import tasks
-from time import sleep
-
 import discord
 import discord.utils
 from discord.ext import tasks, commands
 from discord import app_commands
-from colorama import Back, Fore, Style
-from datetime import datetime
-import platform
-import os
-import random
-import asyncio
-import json
-import datetime
-import string
-from pprint import pprint
-import config
-from PIL import Image, ImageDraw, ImageFont
-import mysql.connector
-import time
 import presets
 
 

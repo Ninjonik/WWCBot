@@ -196,8 +196,8 @@ class Client(commands.Bot):
                 embed.set_thumbnail(url=member.guild.icon)
                 if config.hoi:
                     embed.add_field(
-                        name='**HOI4 Role**', value='If you came to the server to take part in one of our HOI4 games, '
-                                                    'click on '
+                        name='**HOI4 Role**', value='If you came to the server to participate in one of our HOI4 games,'
+                                                    ' click on '
                                                     'the "HOI4" button to get access to HOI4 Category.',
                         inline=False,
                     )
@@ -208,9 +208,9 @@ class Client(commands.Bot):
                     inline=True,
                 )
                 embed.set_footer(
-                    text="Welcome to **World War Community**, make sure to follow verification instructions to get a "
+                    text="Welcome to World War Community, make sure to follow verification instructions to get a "
                          "full "
-                         "access to they; server. "
+                         "access to the server. "
                 )
 
                 await channel.send(content=f"{member.mention}", embed=embed, view=presets.EntryDialog(client))

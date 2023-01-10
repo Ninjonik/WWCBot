@@ -1,7 +1,7 @@
-import asyncio
 import discord
 from discord.ext import commands
 from discord import app_commands
+import presets
 
 
 class clear(commands.Cog):
@@ -10,8 +10,9 @@ class clear(commands.Cog):
 
     @app_commands.command(name="clear", description="Clears last x messages in a channel")
     async def clear(self, interaction: discord.Interaction, amount: int):
-        await interaction.response.send_message(content=f"{amount} messages have been removed.")
-        await interaction.channel.purge(limit=amount+1)
+        if presets.check_perm(interaction.user):
+            await interaction.response.send_message(content=f"{amount} messages have been removed.")
+            await interaction.channel.purge(limit=amount+1)
 
 
 async def setup(client: commands.Bot) -> None:

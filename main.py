@@ -149,6 +149,7 @@ class Client(commands.Bot):
 
     async def check_toxicity(self, message):
         if message.author != client.user and message.content:
+            member = message.author
             analyze_request = {
                 'comment': {'text': message.content},
                 'requestedAttributes': {'TOXICITY': {}}
@@ -156,7 +157,6 @@ class Client(commands.Bot):
             try:
                 response = presets.perspective.comments().analyze(body=analyze_request).execute()
                 toxicityValue = (response["attributeScores"]["TOXICITY"]["summaryScore"]["value"])
-                member = message.author
                 current_time = datetime.datetime.now()
                 self.cursor.execute(
                     "INSERT INTO wwcbot_filter_logs (guildId, created_at, updated_at, message, authorId, result) "

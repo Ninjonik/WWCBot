@@ -164,19 +164,38 @@ class Client(commands.Bot):
                         message.guild.id, current_time, current_time,
                         message.content, message.author.id, toxicityValue))
                 self.connection.commit()
-                if toxicityValue >= 0.8:
+                if toxicityValue >= 0.75:
+                    if toxicityValue < 0.8:
+                        punishment = "Original message has been deleted."
+                    elif toxicityValue >= 0.8 and toxicityValue < 0.9:
+                        punishment = "Original message has been deleted. You have been time-outed for 5 minutes."
+                        time = datetime.datetime.now() + datetime.timedelta(minutes=5)
+                        #member.timeout(time, f"Inappropriate message with value {toxicityValue}")
+                    elif toxicityValue >= 0.9 and toxicityValue < 0.95:
+                        punishment = "Original message has been deleted. You have been time-outed for 15 minutes."
+                        time = datetime.datetime.now() + datetime.timedelta(minutes=15)
+                        #member.timeout(time, f"Inappropriate message with value {toxicityValue}")
+                    else:
+                        punishment = "Original message has been deleted. You have been kicked from the server. Please" \
+                                     " refrain from such a toxicity if you dont want to face harsher consequences."
+                        #member.kick(f"Inappropriate message with value {toxicityValue}")
                     channel = await member.create_dm()
-                    await channel.send(f"Your message with following content:\n"
-                                       f"{message.content}\n"
-                                       f"has been auto-moderated and deleted.\n"
-                                       f"Value of toxicity: {toxicityValue}")
-                    print(f"{presets.prefix()} Message {message} has been deleted with {toxicityValue}.")
+                    embed = discord.Embed(title="WWCBot Automoderation",
+                                          description="One of your messages has been flagged as inappropriate which has"
+                                                      " resulted in the following punishment(s):",
+                                          color=0xe01b24)
+                    embed.set_author(name="WWCBot")
+                    embed.add_field(name="Message Content:", value=message.content, inline=True)
+                    embed.add_field(name="Punishment:", value=punishment, inline=True)
+                    embed.set_footer(text="If you feel that this punishment is a mistake / inappropriate then "
+                                          "please contact WWC Staff.")
+                    await channel.send(embed=embed)
                     await message.delete()
                 else:
                     channel = message.channel
                     # await channel.send(f"Toxicity value: {toxicityValue}")
-            except:
-                pass
+            except Exception as e:
+                print(e)
 
     async def on_member_join(self, member):
         # await updateMemberCount(1, member.guild.id)

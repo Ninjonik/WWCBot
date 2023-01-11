@@ -213,6 +213,7 @@ class Client(commands.Bot):
                 for channel in member.guild.text_channels:
                     if channel.name == 'automod-logs':
                         embed.add_field(name="User:", value=member, inline=True)
+                        embed.add_field(name="Value of toxicity:", value=toxicityValue, inline=True)
                         await channel.send(embed=embed)
 
     async def on_member_join(self, member):

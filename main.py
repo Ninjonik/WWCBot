@@ -178,11 +178,11 @@ class Client(commands.Bot):
                     if toxicityValue < 0.8:
                         punishment = "Original message has been deleted."
                     elif 0.8 <= toxicityValue < 0.9:
-                        punishment = "Original message has been deleted. You have been time-outed for 5 minutes."
+                        punishment = "Original message has been deleted. You have been timed-outed for 5 minutes."
                         timeMessage = datetime.datetime.now().astimezone() + datetime.timedelta(minutes=5)
                         await member.timeout(timeMessage, reason=f"Inappropriate message with value {toxicityValue}")
                     elif 0.9 <= toxicityValue < 0.95:
-                        punishment = "Original message has been deleted. You have been time-outed for 15 minutes."
+                        punishment = "Original message has been deleted. You have been timed-outed for 15 minutes."
                         timeMessage = datetime.datetime.now().astimezone() + datetime.timedelta(minutes=15)
                         await member.timeout(timeMessage, reason=f"Inappropriate message with value {toxicityValue}")
                     else:

@@ -193,6 +193,8 @@ class Client(commands.Bot):
                     await channel.send(embed=embed)
                     for channel in member.guild.text_channels:
                         if channel.name == 'automod-logs':
+                            embed.add_field(name="Time", value=datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S"),
+                                            inline=True)
                             embed.add_field(name="User:", value=member, inline=True)
                             embed.set_footer(text="This message was sent to the user. Consider "
                                                   "taking more actions if needed.")
@@ -206,7 +208,7 @@ class Client(commands.Bot):
                                       color=0xff8000)
                 embed.add_field(name="Error", value=e, inline=True)
                 embed.add_field(name="Message", value=message.content, inline=True)
-                embed.add_field(name="User", value=message.author, inline=True)
+                embed.add_field(name="Time", value=datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S"), inline=True)
                 embed.set_author(name="WWCBot")
                 for channel in member.guild.text_channels:
                     if channel.name == 'automod-logs':

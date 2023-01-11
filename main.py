@@ -166,7 +166,7 @@ class Client(commands.Bot):
                 self.connection.commit()
                 if toxicityValue >= 0.75:
                     channel = await member.create_dm()
-                    embed = discord.Embed(title="WWCBot Automoderation",
+                    embed = discord.Embed(title="You have been auto-moderated",
                                           description="One of your messages has been flagged as inappropriate which has"
                                                       " resulted in the following punishment(s):",
                                           color=0xe01b24)
@@ -201,7 +201,17 @@ class Client(commands.Bot):
                     channel = message.channel
                     # await channel.send(f"Toxicity value: {toxicityValue}")
             except Exception as e:
-                print(presets.prefix() + e)
+                embed = discord.Embed(title="Auto-Moderation Error",
+                                      description="WWCBot has been unable to moderate this message.",
+                                      color=0xff8000)
+                embed.add_field(name="Error", value=e, inline=True)
+                embed.add_field(name="Message", value=message.content, inline=True)
+                embed.add_field(name="User", value=message.author, inline=True)
+                embed.set_author(name="WWCBot")
+                for channel in member.guild.text_channels:
+                    if channel.name == 'automod-logs':
+                        embed.add_field(name="User:", value=member, inline=True)
+                        await channel.send(embed=embed)
 
     async def on_member_join(self, member):
         # await updateMemberCount(1, member.guild.id)

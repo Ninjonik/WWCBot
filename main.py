@@ -148,7 +148,9 @@ class Client(commands.Bot):
         await self.check_toxicity(after)
 
     async def check_toxicity(self, message):
+
         if message.author != client.user and message.content:
+            message.content = (message.content[:75] + '..') if len(message.content) > 75 else message.content
             member = message.author
             analyze_request = {
                 'comment': {'text': message.content},
@@ -158,12 +160,11 @@ class Client(commands.Bot):
                 response = presets.perspective.comments().analyze(body=analyze_request).execute()
                 toxicityValue = (response["attributeScores"]["TOXICITY"]["summaryScore"]["value"])
                 current_time = datetime.datetime.now()
-                self.cursor.execute(
-                    "INSERT INTO wwcbot_filter_logs (guildId, created_at, updated_at, message, authorId, result) "
-                    "VALUES (%s, '%s', '%s', '%s', %s, %s) " % (
-                        message.guild.id, current_time, current_time,
-                        message.content, message.author.id, toxicityValue))
-                self.connection.commit()
+                query = "INSERT INTO wwcbot_filter_logs (guildId, created_at, updated_at, message, authorId, result) " \
+                        "VALUES (%s, %s, %s, %s, %s, %s)"
+                values = (
+                    message.guild.id, current_time, current_time, message.content, message.author.id, toxicityValue)
+                self.cursor.execute(query, values)
                 if toxicityValue >= 0.75:
                     channel = await member.create_dm()
                     embed = discord.Embed(title="You have been auto-moderated",

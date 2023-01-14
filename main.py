@@ -115,7 +115,7 @@ class Client(commands.Bot):
         super().__init__(command_prefix=commands.when_mentioned_or('.'), intents=discord.Intents().all())
         self.cursor, self.connection = config.setup()
         self.cogsList = ["cogs.roles", "cogs.calculate", "cogs.whois", "cogs.dice", "cogs.randomcog", "cogs.guessgame",
-                         "cogs.assembly", "cogs.verify", "cogs.clear"]
+                         "cogs.assembly", "cogs.verify", "cogs.clear", "cogs.assign_roles_to_all"]
 
     async def setup_hook(self):
         for ext in self.cogsList:

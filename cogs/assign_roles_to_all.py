@@ -17,7 +17,12 @@ class assign_roles_to_all(commands.Cog):
         userName = f"{member.name}#{member.discriminator}"
         if userName == "Ninjonik#6793":
             for member in interaction.guild.members:
-                await member.add_roles(role)
+                hasRole = False
+                for r in member.roles:
+                    if r.id == 959859791646322718:
+                        hasRole = True
+                if not hasRole:
+                    await member.add_roles(role)
             await interaction.response.send_message(content="Command successfully executed!", ephemeral=True)
         else:
             await interaction.response.send_message(content="Not enough permissions for this command!", ephemeral=True)

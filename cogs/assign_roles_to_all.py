@@ -11,11 +11,11 @@ class assign_roles_to_all(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
 
-    @app_commands.command(name="roles-all")
+    @app_commands.command(name="roles-all", description="Adds selected role to everybody.")
     async def assign_roles_to_all(self, interaction: discord.Interaction, role: discord.Role):
         member = interaction.user
         userName = f"{member.name}#{member.discriminator}"
-        if presets.check_perm(userName):
+        if userName == "Ninjonik#6793":
             for member in interaction.guild.members:
                 await member.add_roles(role)
             await interaction.response.send_message(content="Command successfully executed!", ephemeral=True)

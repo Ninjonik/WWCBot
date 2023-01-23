@@ -138,7 +138,7 @@ class EntryDialog(discord.ui.View):
                 def check(m):
                     return m.author == interaction.user and m.channel == interaction.channel
 
-                characters = string.ascii_letters + string.digits
+                characters = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ0123456789"
                 key = ''.join(random.choice(characters) for i in range(8))
 
                 filename = f'keys/{key}.png'

@@ -148,7 +148,7 @@ class Client(commands.Bot):
         await self.check_toxicity(after)
 
     async def check_toxicity(self, message):
-
+        toxicityValue = 0
         if message.author != client.user and message.content:
             message.content = (message.content[:75] + '..') if len(message.content) > 75 else message.content
             member = message.author
@@ -166,15 +166,6 @@ class Client(commands.Bot):
                     message.guild.id, current_time, current_time, message.content, message.author.id, toxicityValue)
                 self.cursor.execute(query, values)
                 if toxicityValue >= 0.75:
-                    channel = await member.create_dm()
-                    embed = discord.Embed(title="You have been auto-moderated",
-                                          description="One of your messages has been flagged as inappropriate which has"
-                                                      " resulted in the following punishment(s):",
-                                          color=0xe01b24)
-                    embed.set_author(name="WWCBot")
-                    embed.add_field(name="Message Content:", value=message.content, inline=True)
-                    embed.set_footer(text="If you feel that this punishment is a mistake / inappropriate then"
-                                          " please contact WWC Staff.")
                     await message.delete()
                     if toxicityValue < 0.8:
                         punishment = "Original message has been deleted."
@@ -190,6 +181,16 @@ class Client(commands.Bot):
                         punishment = "Original message has been deleted. You have been kicked from the server. Please" \
                                      " refrain from such a toxicity if you dont want to face harsher consequences."
                         await member.kick(reason=f"Inappropriate message with value {toxicityValue}")
+
+                    channel = await member.create_dm()
+                    embed = discord.Embed(title="You have been auto-moderated",
+                                          description="One of your messages has been flagged as inappropriate which has"
+                                                      " resulted in the following punishment(s):",
+                                          color=0xe01b24)
+                    embed.set_author(name="WWCBot")
+                    embed.add_field(name="Message Content:", value=message.content, inline=True)
+                    embed.set_footer(text="If you feel that this punishment is a mistake / inappropriate then"
+                                          " please contact WWC Staff.")
                     embed.add_field(name="Punishment:", value=punishment, inline=True)
                     await channel.send(embed=embed)
                     for channel in member.guild.text_channels:

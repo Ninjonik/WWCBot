@@ -132,49 +132,48 @@ class EntryDialog(discord.ui.View):
             await interaction.response.send_message("Generating image...")
             await interaction.channel.send("Please enter the following code: (you have 3 tries left)")
 
-            if "Verified" not in [y.name.lower() for y in interaction.user.roles]:
-                log(f" User {interaction.user.name}#{interaction.user.discriminator} has started a verification process.")
+            log(f" User {interaction.user.name}#{interaction.user.discriminator} has started a verification process.")
 
-                def check(m):
-                    return m.author == interaction.user and m.channel == interaction.channel
+            def check(m):
+                return m.author == interaction.user and m.channel == interaction.channel
 
-                characters = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ0123456789"
-                key = ''.join(random.choice(characters) for i in range(8))
+            characters = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ0123456789"
+            key = ''.join(random.choice(characters) for i in range(8))
 
-                filename = f'keys/{key}.png'
-                text = key
-                size = 180
-                fnt = ImageFont.truetype('arial.ttf', size)
-                # create image
-                image = Image.new(mode="RGB", size=(int(size / 1.4) * len(text), size + 60), color="black")
-                draw = ImageDraw.Draw(image)
-                # draw text
-                draw.text((10, 10), text, font=fnt, fill=(255, 255, 0), color="white")
-                # save file
-                image.save(filename)
-                await interaction.channel.send(file=discord.File(filename))
+            filename = f'keys/{key}.png'
+            text = key
+            size = 180
+            fnt = ImageFont.truetype('arial.ttf', size)
+            # create image
+            image = Image.new(mode="RGB", size=(int(size / 1.4) * len(text), size + 60), color="black")
+            draw = ImageDraw.Draw(image)
+            # draw text
+            draw.text((10, 10), text, font=fnt, fill=(255, 255, 0), color="white")
+            # save file
+            image.save(filename)
+            await interaction.channel.send(file=discord.File(filename))
 
-                tries = 3
+            tries = 3
 
-                while tries > 0:
-                    user_key = await self.client.wait_for('message', check=check)
-                    if user_key.content == key:
-                        log(f" User {member.name}#{member.discriminator} "
-                            f"has successfully solved the captcha with {tries} tries left.")
-
-                        await interaction.channel.send(content=f"You have solved the verification, "
-                                                               f"{interaction.user.mention}. ")
-                        await member.add_roles(discord.utils.get(member.guild.roles, name="Verified"))
-                        os.remove(filename)
-                        break
-                    else:
-                        tries = tries - 1
-                        await interaction.channel.send(f"Incorrect, you have {tries} tries left.")
-                        log(f" User {member.name}#{member.discriminator} has failed captcha with "
-                            f"{tries} left, generated key was {key} and they entered {user_key.content}")
-                        continue
-                if tries == 0:
-                    os.remove(filename)
+            while tries > 0:
+                user_key = await self.client.wait_for('message', check=check)
+                if user_key.content == key:
                     log(f" User {member.name}#{member.discriminator} "
-                        f"has been kicked from the server for not completing the captcha.")
-                    await kick(member)
+                        f"has successfully solved the captcha with {tries} tries left.")
+
+                    await interaction.channel.send(content=f"You have solved the verification, "
+                                                           f"{interaction.user.mention}. ")
+                    await member.add_roles(discord.utils.get(member.guild.roles, name="Verified"))
+                    os.remove(filename)
+                    break
+                else:
+                    tries = tries - 1
+                    await interaction.channel.send(f"Incorrect, you have {tries} tries left.")
+                    log(f" User {member.name}#{member.discriminator} has failed captcha with "
+                        f"{tries} left, generated key was {key} and they entered {user_key.content}")
+                    continue
+            if tries == 0:
+                os.remove(filename)
+                log(f" User {member.name}#{member.discriminator} "
+                    f"has been kicked from the server for not completing the captcha.")
+                await kick(member)

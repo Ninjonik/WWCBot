@@ -1,3 +1,4 @@
+import sys
 from asyncio import tasks
 from time import sleep
 
@@ -127,8 +128,8 @@ class Client(commands.Bot):
             print(presets.prefix() + " Connected to MySQL Server version ", db_Info)
         print(presets.prefix() + " Logged in as " + Fore.YELLOW + self.user.name)
         print(presets.prefix() + " Bot ID " + Fore.YELLOW + str(self.user.id))
-        print(presets.prefix() + " Discord Version " + Fore.YELLOW + self.user.name)
-        print(presets.prefix() + " Python version " + Fore.YELLOW + discord.__version__)
+        print(presets.prefix() + " Discord Version " + Fore.YELLOW + discord.__version__)
+        print(presets.prefix() + " Python version " + Fore.YELLOW + platform.python_version())
         print(presets.prefix() + " Syncing slash commands...")
         synced = await self.tree.sync()
         print(presets.prefix() + " Slash commands synced " + Fore.YELLOW + str(len(synced)) + " Commands")

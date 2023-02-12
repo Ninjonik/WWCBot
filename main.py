@@ -8,17 +8,9 @@ from discord.ext import tasks, commands
 from colorama import Back, Fore, Style
 from datetime import datetime
 import platform
-import os
-import random
 import asyncio
-import json
 import datetime
-import string
-from pprint import pprint
 import config
-from PIL import Image, ImageDraw, ImageFont
-import mysql.connector
-import time
 import presets
 
 intents = discord.Intents.all()
@@ -69,7 +61,7 @@ async def on_start(server_name, server_description, guild_id, guild_count):
             connection.commit()
 
 
-@tasks.loop(hours=24)
+@tasks.loop(hours=6)
 async def update_guild_data(guilds):
     for guild in guilds:
         print(f"{presets.prefix()} Initializing guild {guild.name}")

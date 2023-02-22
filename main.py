@@ -110,14 +110,20 @@ class Client(commands.Bot):
         self.cogsList = ["cogs.roles", "cogs.calculate", "cogs.whois", "cogs.dice", "cogs.randomcog", "cogs.guessgame",
                          "cogs.assembly", "cogs.clear", "cogs.assign_roles_to_all"]
 
+    @tasks.loop(seconds=1400)
+    async def refreshConnection(self):
+        print(presets.prefix() + " Refreshing DB Connection")
+        self.cursor, self.connection = config.setup()
+        if self.connection.is_connected():
+            db_Info = self.connection.get_server_info()
+            print(presets.prefix() + " Connected to MySQL Server version ", db_Info)
+
     async def setup_hook(self):
         for ext in self.cogsList:
             await self.load_extension(ext)
 
     async def on_ready(self):
-        if self.connection.is_connected():
-            db_Info = self.connection.get_server_info()
-            print(presets.prefix() + " Connected to MySQL Server version ", db_Info)
+        await self.refreshConnection()
         print(presets.prefix() + " Logged in as " + Fore.YELLOW + self.user.name)
         print(presets.prefix() + " Bot ID " + Fore.YELLOW + str(self.user.id))
         print(presets.prefix() + " Discord Version " + Fore.YELLOW + discord.__version__)

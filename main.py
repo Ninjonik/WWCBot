@@ -1,3 +1,5 @@
+import random
+
 import discord
 import discord.utils
 from discord.ext import tasks, commands
@@ -139,6 +141,38 @@ class Client(commands.Bot):
 
     async def on_message(self, message):
         await self.check_toxicity(message)
+        valid_greetings = {"hi", "hello", "sup", "hi!", "hello!", "sup!", "hello everyone", "hello everyone!"}
+        valid_hrus = {"hru?", "hru", "how are you?", "how are you", "how have you been?", "how have you been"}
+
+        if message.content.lower() in valid_greetings:
+            rules_channel = message.guild.rules_channel
+            embed = discord.Embed(
+                title=f"Hello, {message.author.name}!",
+                description=f"Welcome to WWC's Discord, {message.author.mention}! "
+                            f"We're glad to have you here. Please take a moment to read our rules in "
+                            f"{rules_channel.mention}. "
+                            f"If you have any questions, don't hesitate to ask in the appropriate channel. Enjoy your "
+                            f"stay!",
+                color=0x00ff00
+            )
+            await message.channel.send(embed=embed)
+
+        elif message.content.lower() in valid_hrus:
+            responses = [
+                "Thanks! I'm fine! How are you?",
+                "Great, thank you. How are you?",
+                "Good, thanks, and you?",
+                "Fine, thanks. How are you?",
+                "I’m doing well.",
+                "I’m fine, maybe a little tired. I need some more coffee. ☕",
+                "Good, thanks.",
+                "Not bad, thanks. How about you?",
+                "I'm doing alright. How about you?",
+                "Can't complain, thanks. How are you?",
+                "I'm doing well, thank you. How about you?",
+                "I'm doing great, thanks. How are you?"
+            ]
+            await message.channel.send(random.choice(responses))
 
     async def on_message_edit(self, before, after):
         await self.check_toxicity(after)

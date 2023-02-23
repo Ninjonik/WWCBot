@@ -36,13 +36,12 @@ admins = {
     "no idea#8824"
 }
 
-
 perspective = discovery.build(
-  "commentanalyzer",
-  "v1alpha1",
-  developerKey=config.API_KEY,
-  discoveryServiceUrl="https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1",
-  static_discovery=False,
+    "commentanalyzer",
+    "v1alpha1",
+    developerKey=config.API_KEY,
+    discoveryServiceUrl="https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1",
+    static_discovery=False,
 )
 
 
@@ -177,3 +176,36 @@ class EntryDialog(discord.ui.View):
                 log(f" User {member.name}#{member.discriminator} "
                     f"has been kicked from the server for not completing the captcha.")
                 await kick(member)
+
+class AssemblyDialog(discord.ui.View):
+    def __init__(self, client):
+        super().__init__(timeout=None)
+        self.cursor, self.connection = config.setup()
+
+    @discord.ui.button(label="Assembly Member", style=discord.ButtonStyle.blurple,
+                       custom_id="as_assembly_member", emoji="📋")
+    async def assembly_member(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.cursor.execute("SELECT discord_id FROM assemblies WHERE discord_id='%s'" % interaction.user.id)
+        assembly = self.cursor.fetchall()
+        current_time = datetime.datetime.now()
+        if not assembly:
+            print(f"{prefix()} User was not in DB - {interaction.user.name}")
+            self.cursor.execute("INSERT INTO assemblies (discord_id, created_at, updated_at) "
+                                "VALUES (%s, '%s', '%s')"
+                                % (interaction.user.id, current_time, current_time))
+            self.connection.commit()
+            await interaction.user.add_roles(
+                discord.utils.get(interaction.user.guild.roles, name="Assembly Member"))
+        else:
+            print(f"{prefix()} Removing User from Assembly - {interaction.user.name}")
+            self.cursor.execute("DELETE FROM assemblies WHERE discord_id=%s"
+                                % interaction.user.id)
+            self.connection.commit()
+            await interaction.user.remove_roles(
+                discord.utils.get(interaction.user.guild.roles, name="Assembly Member"))
+        await interaction.response.send_message("Your roles have been updated.", ephemeral=True)
+
+    @discord.ui.button(label="Assembly", style=discord.ButtonStyle.danger, custom_id="as_assembly", emoji="📚")
+    async def assembly(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_message("https://docs.google.com/document/d/19eV4b-V6LIG1m2_pXdD_txJb"
+                                                "RaCzrMOsxy3GI1CCR5U/edit?usp=sharing")

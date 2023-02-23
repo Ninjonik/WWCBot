@@ -4,6 +4,7 @@ from time import sleep
 
 import discord
 import discord.utils
+import interactions
 from discord.ext import tasks, commands
 from colorama import Back, Fore, Style
 from datetime import datetime
@@ -108,7 +109,8 @@ class Client(commands.Bot):
         super().__init__(command_prefix=commands.when_mentioned_or('.'), intents=discord.Intents().all())
         self.cursor, self.connection = config.setup()
         self.cogsList = ["cogs.roles", "cogs.calculate", "cogs.whois", "cogs.dice", "cogs.randomcog", "cogs.guessgame",
-                         "cogs.assembly", "cogs.clear", "cogs.assign_roles_to_all"]
+                         "cogs.assembly", "cogs.clear", "cogs.assign_roles_to_all", "cogs.assembly_info",
+                         "cogs.assembly_suggest"]
 
     @tasks.loop(seconds=1400)
     async def refreshConnection(self):
@@ -164,11 +166,11 @@ class Client(commands.Bot):
                 values = (
                     message.guild.id, current_time, current_time, message.content, message.author.id, toxicityValue)
                 self.cursor.execute(query, values)
-                if toxicityValue >= 0.75:
+                if toxicityValue >= 0.60:
                     await message.delete()
-                    if toxicityValue < 0.8:
+                    if toxicityValue < 0.75:
                         punishment = "Original message has been deleted."
-                    elif 0.8 <= toxicityValue < 0.9:
+                    elif 0.75 <= toxicityValue < 0.9:
                         punishment = "Original message has been deleted. You have been timed-outed for 5 minutes."
                         timeMessage = datetime.datetime.now().astimezone() + datetime.timedelta(minutes=5)
                         await member.timeout(timeMessage, reason=f"Inappropriate message with value {toxicityValue}")
@@ -197,6 +199,8 @@ class Client(commands.Bot):
                             embed.add_field(name="Time", value=datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S"),
                                             inline=True)
                             embed.add_field(name="User:", value=member, inline=True)
+                            embed.add_field(name="Punishment:", value=punishment, inline=True)
+                            embed.add_field(name="Toxicity Value:", value=toxicityValue)
                             embed.set_footer(text="This message was sent to the user. Consider "
                                                   "taking more actions if needed.")
                             await channel.send(embed=embed)
@@ -216,6 +220,42 @@ class Client(commands.Bot):
                         embed.add_field(name="User:", value=member, inline=True)
                         embed.add_field(name="Value of toxicity:", value=toxicityValue, inline=True)
                         await channel.send(embed=embed)
+
+    async def on_raw_reaction_add(self, payload):
+        guild = client.get_guild(payload.guild_id)
+        member = await guild.fetch_member(payload.user_id)
+        channel = await guild.fetch_channel(payload.channel_id)
+        message = await channel.fetch_message(payload.message_id)
+        role = discord.utils.get(guild.roles, name="Assembly Leader")
+
+        print(member, message, role, guild)
+        if not member.bot and role in member.roles and payload.emoji.name == "🔒":
+            current_time = datetime.datetime.now()
+            approvals = discord.utils.get(message.reactions, emoji="✅")
+            denials = discord.utils.get(message.reactions, emoji="❎")
+            count_sum = approvals.count - denials.count
+            self.cursor.execute("UPDATE assembly_suggestions SET votes=%s, updated_at='%s' "
+                                "WHERE message_id=%s" % (count_sum, current_time, payload.message_id))
+            self.connection.commit()
+            embed = discord.Embed(title="Suggestion closed!", color=0xff0000)
+            embed.add_field(name="Closed!",
+                            value=f"Suggestion #{message.id} has been 🔒 closed by the Assembly Leader {member.mention}",
+                            inline=True)
+            embed.add_field(name="Voting Result!", value=f"\nVotes result: **{approvals.count}** - **{denials.count}**",
+                            inline=True)
+            await channel.send(embed=embed)
+            await message.clear_reactions()
+            await message.add_reaction("🔓")
+        elif not member.bot and role in member.roles and payload.emoji.name == "🔓":
+            await message.clear_reactions()
+            await message.add_reaction('✅')
+            await message.add_reaction('❎')
+            await message.add_reaction('🔒')
+            embed = discord.Embed(title="Suggestion re-opened!", color=0x00ff00)
+            embed.add_field(name="Re-Opened!",
+                            value=f"Suggestion #{message.id} has been 🔓 re-opened by the Assembly Leader"
+                                  f" {member.mention}\nYou can now vote again on this suggestion!")
+            await channel.send(embed=embed)
 
     async def on_member_join(self, member):
         # await updateMemberCount(1, member.guild.id)

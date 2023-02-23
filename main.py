@@ -1,12 +1,7 @@
-import sys
-from asyncio import tasks
-from time import sleep
-
 import discord
 import discord.utils
-import interactions
 from discord.ext import tasks, commands
-from colorama import Back, Fore, Style
+from colorama import Fore
 from datetime import datetime
 import platform
 import asyncio

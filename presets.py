@@ -64,6 +64,19 @@ def log(content):
     print(prefix() + content)
 
 
+async def _add_player(player_id, rating_percentage, current_time):
+    cursor, connection = config.setup()
+    try:
+        cursor.execute(
+            "INSERT INTO players (discord_id, rating, created_at, updated_at) VALUES (%s, %s, %s, %s) "
+            "ON DUPLICATE KEY UPDATE rating = %s, updated_at = %s",
+            (player_id, rating_percentage, current_time, current_time, rating_percentage, current_time))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise e
+
+
 class UpdateRoles(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)

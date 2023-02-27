@@ -211,6 +211,8 @@ class AssemblyDialog(discord.ui.View):
                 discord.utils.get(interaction.user.guild.roles, name="Assembly Member"))
         else:
             print(f"{prefix()} Removing User from Assembly - {interaction.user.name}")
+            self.cursor.execute("DELETE FROM assembly_suggestions WHERE discord_id=%s"
+                                % interaction.user.id)
             self.cursor.execute("DELETE FROM assemblies WHERE discord_id=%s"
                                 % interaction.user.id)
             self.connection.commit()

@@ -67,7 +67,7 @@ async def update_guild_data(guilds):
         print(f"{presets.prefix()} Guild {guild.name} initialized!")
 
 
-@tasks.loop(seconds=60)
+@tasks.loop(seconds=1800)
 async def guildLoop():
     # Establish database connection
     cursor, connection = config.setup()
@@ -178,6 +178,7 @@ class Client(commands.Bot):
         await self.check_toxicity(after)
 
     async def check_toxicity(self, message):
+        self.cursor, self.connection = config.setup()
         toxicityValue = 0
         if message.author != client.user and message.content:
             message.content = (message.content[:75] + '..') if len(message.content) > 75 else message.content
@@ -251,6 +252,7 @@ class Client(commands.Bot):
                         await channel.send(embed=embed)
 
     async def on_raw_reaction_add(self, payload):
+        self.cursor, self.connection = config.setup()
         guild = client.get_guild(payload.guild_id)
         member = await guild.fetch_member(payload.user_id)
         channel = await guild.fetch_channel(payload.channel_id)

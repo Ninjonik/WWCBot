@@ -13,6 +13,7 @@ class assembly_info(commands.Cog):
 
     @app_commands.command(name="assembly_info", description="Who is in our current assembly?")
     async def assembly_info(self, interaction: discord.Interaction):
+        self.cursor, self.connection = config.setup()
         self.cursor.execute("SELECT * FROM assemblies")
         assembly = self.cursor.fetchall()
         assembly_members = []

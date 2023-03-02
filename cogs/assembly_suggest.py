@@ -14,6 +14,7 @@ class assembly_suggest(commands.Cog):
     @app_commands.command(name='assembly_suggest', description="Creates an Assembly Suggestion for Assembly Members "
                                                                "to vote!")
     async def assembly_suggest(self, interaction: discord.Interaction, title: str, description: str):
+        self.cursor, self.connection = config.setup()
         self.cursor.execute("SELECT discord_id FROM assemblies WHERE discord_id='%s'" % interaction.user.id)
         assembly = self.cursor.fetchall()
         current_time = datetime.datetime.now()

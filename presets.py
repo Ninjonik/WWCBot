@@ -198,6 +198,7 @@ class AssemblyDialog(discord.ui.View):
     @discord.ui.button(label="Assembly Member", style=discord.ButtonStyle.blurple,
                        custom_id="as_assembly_member", emoji="📋")
     async def assembly_member(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.cursor, self.connection = config.setup()
         self.cursor.execute("SELECT discord_id FROM assemblies WHERE discord_id='%s'" % interaction.user.id)
         assembly = self.cursor.fetchall()
         current_time = datetime.datetime.now()

@@ -144,7 +144,8 @@ class Client(commands.Bot):
         valid_greetings = {"hi", "hello", "sup", "hi!", "hello!", "sup!", "hello everyone", "hello everyone!"}
         valid_hrus = {"hru?", "hru", "how are you?", "how are you", "how have you been?", "how have you been"}
 
-        if message.content.lower() in valid_greetings:
+        now = datetime.datetime.utcnow()
+        if message.content.lower() in valid_greetings and now-datetime.timedelta(hours=72) <= message.author.joined_at <= now:
             rules_channel = message.guild.rules_channel
             embed = discord.Embed(
                 title=f"Hello, {message.author.name}!",
